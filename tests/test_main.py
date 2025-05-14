@@ -1,30 +1,31 @@
-from main import Product, Category  # импортируем классы из main.py
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-def test_product_creation():
-    product = Product("Mouse", "Wireless mouse", 2000, 15)
+from src.utils import Category, Product
 
-    assert product.name == "Mouse"
-    assert product.description == "Wireless mouse"
-    assert product.price == 2000
-    assert product.quantity == 15
 
-def test_category_creation():
-    product1 = Product("Keyboard", "Mechanical keyboard", 5000, 8)
-    product2 = Product("Monitor", "24-inch monitor", 12000, 3)
-    category = Category("Accessories", "Computer accessories", [product1, product2])
+def test_add_product():
+    product = Product("Test Phone", "Test Description", 10000.0, 3)
+    category = Category("Тестовая категория", "Описание", [])
+    category.add_product(product)
 
-    assert category.name == "Accessories"
-    assert category.description == "Computer accessories"
-    assert category.products == [product1, product2]
+    assert len(category.products) == 1
+    assert "Test Phone" in category.products[0]
 
-def test_counters_reset():
-    # Сохраняем старые значения счётчиков
-    old_categories = Category.total_categories
-    old_products = Category.total_products
 
-    product1 = Product("Webcam", "HD webcam", 3000, 4)
-    product2 = Product("Headphones", "Noise cancelling", 7000, 2)
-    Category("Gadgets", "Office gadgets", [product1, product2])
+def test_price_getter_and_setter():
+    product = Product("Test Product", "Description", 5000, 2)
+    assert product.price == 5000
 
-    assert Category.total_categories == old_categories + 1
-    assert Category.total_products == old_products + 2
+    product.price = 7000
+    assert product.price == 7000
+
+
+def test_price_setter_with_invalid_value(capsys):
+    product = Product("Test Product", "Description", 5000, 2)
+    product.price = -300
+
+    captured = capsys.readouterr()
+    assert "Цена не должна быть нулевая или отрицательная" in captured.out
+    assert product.price == 5000
