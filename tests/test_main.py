@@ -1,4 +1,4 @@
-from main import Product, Category  # импортируем классы из main.py
+from src.utils import Product, Category
 
 def test_product_creation():
     product = Product("Mouse", "Wireless mouse", 2000, 15)
@@ -19,12 +19,12 @@ def test_category_creation():
 
 def test_counters_reset():
     # Сохраняем старые значения счётчиков
-    old_categories = Category.total_categories
-    old_products = Category.total_products
+    old_categories = Category.category_count
+    old_products = Category.product_count
 
     product1 = Product("Webcam", "HD webcam", 3000, 4)
     product2 = Product("Headphones", "Noise cancelling", 7000, 2)
     Category("Gadgets", "Office gadgets", [product1, product2])
 
-    assert Category.total_categories == old_categories + 1
-    assert Category.total_products == old_products + 2
+    assert Category.category_count == old_categories + 1
+    assert Category.product_count == old_products + 2
