@@ -43,3 +43,37 @@ def test_category_str():
     p2 = Product("Хлеб", "Выпечка", 40, 5)
     cat = Category("Продукты", "Еда и напитки", [p1, p2])
     assert str(cat) == "Продукты, количество продуктов: 15 шт."
+
+
+from src.utils import Smartphone, LawnGrass, Category, Product
+import pytest
+
+
+def test_smartphone_attributes():
+    phone = Smartphone("iPhone", "Смартфон", 100_000, 5, "высокая", "13 Pro", "512GB", "золотой")
+    assert phone.efficiency == "высокая"
+    assert phone.model == "13 Pro"
+    assert phone.memory == "512GB"
+    assert phone.color == "золотой"
+
+
+def test_lawngrass_attributes():
+    grass = LawnGrass("Трава", "Газон", 500, 10, "Россия", "14 дней", "зеленый")
+    assert grass.country == "Россия"
+    assert grass.germination_period == "14 дней"
+    assert grass.color == "зеленый"
+
+
+def test_add_different_types_raises():
+    p = Product("Test", "Desc", 100, 1)
+    s = Smartphone("Phone", "Smart", 200, 1, "средняя", "X", "128GB", "черный")
+
+    with pytest.raises(TypeError):
+        _ = p + s
+
+
+def test_add_invalid_product_type():
+    category = Category("Тест", "Описание", [])
+
+    with pytest.raises(TypeError):
+        category.add_product("не продукт")

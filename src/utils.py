@@ -11,9 +11,9 @@ class Product:
         self.quantity = quantity
 
     def __add__(self, other):
-        if isinstance(other, Product):
+        if isinstance(other, Product) and type(self) is type(other):
             return self.price * self.quantity + other.price * other.quantity
-        return NotImplemented
+        raise TypeError("Нельзя складывать товары разных типов")
 
     def __str__(self):
         return f'{self.name}, {self.price} руб. Остаток: {self.quantity} шт.'
@@ -32,6 +32,21 @@ class Product:
     @classmethod
     def new_product(cls, data: dict):
         return cls(name=data["name"], description=data["description"], price=data["price"], quantity=data["quantity"])
+
+class Smartphone(Product):
+    def __init__(self, name, description, price, quantity, efficiency, model, memory, color):
+        super().__init__(name, description, price, quantity)
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.color = color
+
+class LawnGrass(Product):
+    def __init__(self, name, description, price, quantity, country, germination_period, color):
+        super().__init__(name, description, price, quantity)
+        self.country = country
+        self.germination_period = germination_period
+        self.color = color
 
 
 class Category:
