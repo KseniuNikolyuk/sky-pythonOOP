@@ -1,79 +1,69 @@
-from src.utils import Category, Product
+import pytest
+from src.utils import Product, Smartphone, LawnGrass, Category
 
+def test_product_creation_and_str():
+    p = Product("Молоко", "Напитки", 100, 10)
+    assert p.name == "Молоко"
+    assert p.description == "Напитки"
+    assert p.price == 100
+    assert p.quantity == 10
+    assert str(p) == "Молоко, 100 руб. Остаток: 10 шт."
 
-def test_add_product():
-    product = Product("Test Phone", "Test Description", 10000.0, 3)
-    category = Category("Тестовая категория", "Описание", [])
-    category.add_product(product)
+def test_price_getter_setter():
+    p = Product("Тест", "Описание", 500, 5)
+    assert p.price == 500
+    p.price = 700
+    assert p.price == 700
 
-    assert len(category.products) == 1
-    assert "Test Phone" in category.products[0]
-
-
-def test_product_str():
-    p = Product("Молоко", "Напитки", 80, 15)
-    assert str(p) == "Молоко, 80 руб. Остаток: 15 шт."
-
-
-def test_product_add():
-    p1 = Product("Молоко", "Напитки", 80, 10)
-    p2 = Product("Хлеб", "Выпечка", 40, 5)
-    assert p1 + p2 == 80 * 10 + 40 * 5
-
-
-def test_price_getter_and_setter():
-    product = Product("Test Product", "Description", 5000, 2)
-    assert product.price == 5000
-
-    product.price = 7000
-    assert product.price == 7000
-
-
-def test_price_setter_with_invalid_value(capsys):
-    product = Product("Test Product", "Description", 5000, 2)
-    product.price = -300
-
+def test_price_setter_invalid_value(capsys):
+    p = Product("Тест", "Описание", 500, 5)
+    p.price = -10
     captured = capsys.readouterr()
     assert "Цена не должна быть нулевая или отрицательная" in captured.out
-    assert product.price == 5000
+    # Значение price не должно поменяться
+    assert p.price == 500
 
+def test_add_products_to_category():
+    p1 = Product("Хлеб", "Выпечка", 50, 20)
+    p2 = Product("Молоко", "Напитки", 80, 10)
+    cat = Category("Продукты", "Еда и напитки", [])
+    cat.add_product(p1)
+    cat.add_product(p2)
+    assert len(cat.products) == 2
+    assert "Хлеб" in cat.products[0]
+    assert "Молоко" in cat.products[1]
+    assert str(cat) == "Продукты, количество продуктов: 30 шт."
 
-def test_category_str():
-    p1 = Product("Молоко", "Напитки", 80, 10)
-    p2 = Product("Хлеб", "Выпечка", 40, 5)
-    cat = Category("Продукты", "Еда и напитки", [p1, p2])
-    assert str(cat) == "Продукты, количество продуктов: 15 шт."
+def test_add_invalid_product_type_raises():
+    cat = Category("Тест", "Описание", [])
+    with pytest.raises(TypeError):
+        cat.add_product("Не продукт")
 
+def test_product_add_operator():
+    p1 = Product("Товар1", "Описание1", 100, 2)
+    p2 = Product("Товар2", "Описание2", 200, 3)
+    # Сумма стоимостей
+    assert p1 + p2 == 100*2 + 200*3
 
-from src.utils import Smartphone, LawnGrass, Category, Product
-import pytest
-
+def test_product_add_operator_type_error():
+    p = Product("Товар", "Описание", 100, 2)
+    s = Smartphone("Телефон", "Смартфон", 500, 1, "высокая", "ModelX", "128GB", "черный")
+    with pytest.raises(TypeError):
+        _ = p + s
 
 def test_smartphone_attributes():
     phone = Smartphone("iPhone", "Смартфон", 100_000, 5, "высокая", "13 Pro", "512GB", "золотой")
+    assert phone.name == "iPhone"
+    assert phone.price == 100_000
     assert phone.efficiency == "высокая"
     assert phone.model == "13 Pro"
     assert phone.memory == "512GB"
     assert phone.color == "золотой"
 
-
 def test_lawngrass_attributes():
     grass = LawnGrass("Трава", "Газон", 500, 10, "Россия", "14 дней", "зеленый")
+    assert grass.name == "Трава"
+    assert grass.price == 500
     assert grass.country == "Россия"
     assert grass.germination_period == "14 дней"
     assert grass.color == "зеленый"
-
-
-def test_add_different_types_raises():
-    p = Product("Test", "Desc", 100, 1)
-    s = Smartphone("Phone", "Smart", 200, 1, "средняя", "X", "128GB", "черный")
-
-    with pytest.raises(TypeError):
-        _ = p + s
-
-
-def test_add_invalid_product_type():
-    category = Category("Тест", "Описание", [])
-
-    with pytest.raises(TypeError):
-        category.add_product("не продукт")

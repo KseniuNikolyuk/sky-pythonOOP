@@ -1,14 +1,38 @@
-class Product:
-    name: str
-    description: str
-    price: int
-    quantity: int
+from abc import ABC, abstractmethod
 
+class BaseProduct(ABC):
     def __init__(self, name, description, price, quantity):
         self.name = name
         self.description = description
-        self.__price = price
+        self._price = price  # приватный атрибут для хранения цены
         self.quantity = quantity
+
+    @property
+    def price(self):
+        return self._price
+
+    @price.setter
+    def price(self, new_price):
+        if new_price <= 0:
+            print("Цена не должна быть нулевая или отрицательная")
+        else:
+            self._price = new_price
+
+    @abstractmethod
+    def __str__(self):
+        pass
+
+
+class InfoMixin:
+    def __init__(self, *args, **kwargs):
+        cls_name = self.__class__.__name__
+        print(f"{cls_name} создан с параметрами: {args}, {kwargs}")
+        super().__init__(*args, **kwargs)
+
+
+class Product(InfoMixin, BaseProduct):
+    def __init__(self, name, description, price, quantity):
+        super().__init__(name, description, price, quantity)
 
     def __add__(self, other):
         if isinstance(other, Product) and type(self) is type(other):
@@ -18,32 +42,21 @@ class Product:
     def __str__(self):
         return f'{self.name}, {self.price} руб. Остаток: {self.quantity} шт.'
 
-    @property
-    def price(self):
-        return self.__price
-
-    @price.setter
-    def price(self, new_price):
-        if new_price <= 0:
-            print("Цена не должна быть нулевая или отрицательная")
-        else:
-            self.__price = new_price
-
     @classmethod
     def new_product(cls, data: dict):
         return cls(name=data["name"], description=data["description"], price=data["price"], quantity=data["quantity"])
 
 class Smartphone(Product):
-    def __init__(self, name, description, price, quantity, efficiency, model, memory, color):
-        super().__init__(name, description, price, quantity)
+    def __init__(self, name, description, _price, quantity, efficiency, model, memory, color):
+        super().__init__(name, description, _price, quantity)
         self.efficiency = efficiency
         self.model = model
         self.memory = memory
         self.color = color
 
 class LawnGrass(Product):
-    def __init__(self, name, description, price, quantity, country, germination_period, color):
-        super().__init__(name, description, price, quantity)
+    def __init__(self, name, description, _price, quantity, country, germination_period, color):
+        super().__init__(name, description, _price, quantity)
         self.country = country
         self.germination_period = germination_period
         self.color = color
@@ -76,7 +89,7 @@ class Category:
 
     @property
     def products(self):
-        return [f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт." for product in self.__products]
+        return [f"{product.name}, {product._price} руб. Остаток: {product.quantity} шт." for product in self.__products]
 
 
 product1 = Product("Laptop", "High-end laptop", 1500, 5)

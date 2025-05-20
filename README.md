@@ -47,3 +47,4 @@ category = Category("Electronics", "All kinds of electronic devices", [product1,
 
 print(Category.category_count)  # 1
 print(Category.product_count)   # 2
+
