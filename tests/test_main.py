@@ -67,3 +67,18 @@ def test_lawngrass_attributes():
     assert grass.country == "Россия"
     assert grass.germination_period == "14 дней"
     assert grass.color == "зеленый"
+
+    def test_product_quantity_zero_raises():
+        with pytest.raises(ValueError, match="Товар с нулевым количеством не может быть добавлен"):
+            Product("Бракованный товар", "Описание", 1000, 0)
+
+    def test_category_average_price():
+        p1 = Product("Товар1", "Описание1", 100, 1)
+        p2 = Product("Товар2", "Описание2", 200, 1)
+        category = Category("Категория", "Описание категории", [p1, p2])
+        assert category.average_price() == (100 + 200) / 2
+
+    def test_category_average_price_empty():
+        category = Category("Пустая категория", "Описание", [])
+        assert category.average_price() == 0
+
